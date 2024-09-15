@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高周波音ジェネレーター</title>
+    <title>高周波音ジェネレーター / High Frequency Sound Generator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -62,12 +62,18 @@
             margin-top: 5px;
             font-size: 0.8rem;
         }
+        #languageToggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
     </style>
 </head>
 <body>
+    <button id="languageToggle">English</button>
     <div class="container">
-        <h1>高周波音ジェネレーター</h1>
-        <p>人間の平均的な可聴域: 約20Hz〜20kHz（個人差あり）</p>
+        <h1 data-ja="高周波音ジェネレーター" data-en="High Frequency Sound Generator"></h1>
+        <p data-ja="人間の平均的な可聴域: 約20Hz〜20kHz（個人差あり）" data-en="Average human audible range: about 20Hz to 20kHz (varies by individual)"></p>
         <div class="frequency-range"></div>
         <div class="frequency-labels">
             <span>14kHz</span>
@@ -76,8 +82,8 @@
         </div>
         <div class="controls">
             <input type="range" id="frequencySlider" min="14000" max="40000" step="100" value="14000">
-            <p>周波数: <span id="frequencyValue">14000</span> Hz</p>
-            <button id="toggleSound">開始</button>
+            <p><span data-ja="周波数" data-en="Frequency"></span>: <span id="frequencyValue">14000</span> Hz</p>
+            <button id="toggleSound" data-ja="開始" data-en="Start"></button>
         </div>
     </div>
 
@@ -96,7 +102,7 @@
             oscillator.connect(audioContext.destination);
             oscillator.start();
             isPlaying = true;
-            toggleButton.textContent = '停止';
+            updateToggleButtonText();
         }
 
         function stopSound() {
@@ -106,7 +112,13 @@
                 oscillator = null;
             }
             isPlaying = false;
-            toggleButton.textContent = '開始';
+            updateToggleButtonText();
+        }
+
+        function updateToggleButtonText() {
+            toggleButton.textContent = isPlaying 
+                ? (currentLanguage === 'ja' ? '停止' : 'Stop')
+                : (currentLanguage === 'ja' ? '開始' : 'Start');
         }
 
         toggleButton.addEventListener('click', () => {
@@ -124,6 +136,21 @@
                 oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
             }
         });
+
+        // 言語切り替え機能
+        let currentLanguage = 'ja';
+        const languageToggle = document.getElementById('languageToggle');
+
+        function switchLanguage() {
+            currentLanguage = currentLanguage === 'ja' ? 'en' : 'ja';
+            document.querySelectorAll('[data-ja][data-en]').forEach(elem => {
+                elem.textContent = elem.getAttribute(`data-${currentLanguage}`);
+            });
+            languageToggle.textContent = currentLanguage === 'ja' ? 'English' : '日本語';
+            updateToggleButtonText();
+        }
+
+        languageToggle.addEventListener('click', switchLanguage);
     </script>
 </body>
 </html>
